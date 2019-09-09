@@ -1,7 +1,7 @@
 from flask import Flask
 from views.patient import patientApi
 from views.attendance import attendanceApi
-from views.transactionBigchainDB import transaction
+from views.transaction import transactionApi
 
 
 app = Flask(__name__)

@@ -1,26 +1,34 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from bigchaindb_driver import BigchainDB
 from bigchaindb_driver.crypto import generate_keypair
 from config.mongo import db
+from bson.objectid import ObjectId
+import json
+from bson.json_util import dumps
 
-baseUrl = 'http://localhost:9984/'
+baseUrl = 'http://localhost:9984'
 # Criando objeto da classe BigChainDB
+
 bdb = BigchainDB(baseUrl)
 # Criando chaves privadas e públicas
+
 key_consultation = generate_keypair()
 
 collection = db.attendance
 
 transactionApi = Blueprint('transaction-api', __name__)
 
-@transactionApi.route('/', methods=['post'])
-def transaction():
+@transactionApi.route('/make', methods=['post'])
+def makeTransaction():
 
-    data = collection.find()
+    attendances = json.loads(dumps(collection.find({'_id': ObjectId(request.get_json()['id'])})))
+
+    for attendance in attendances:
+            attendance['_id'] = str(attendance['_id'])
 
     medical_consultation = {
         'data': {
-            'medical_consultation': data
+            'medical_consultation': attendances
         }
     }
 
