@@ -4,6 +4,7 @@ from bigchaindb_driver.crypto import generate_keypair
 import json
 from bson.objectid import ObjectId
 from bson.json_util import dumps
+from datetime import datetime
 
 from config.mongo import db
 from utils.validate_keys import validate_keys
@@ -37,6 +38,8 @@ def register():
             attendance['data'][key] = patient['data']
         else:
             attendance['data'][key] = data[key]
+
+    attendance['data']['createdAt'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
     try:
         collection.insert_one(attendance)

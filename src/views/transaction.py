@@ -14,21 +14,22 @@ bdb = BigchainDB(baseUrl)
 
 key_consultation = generate_keypair()
 
-collection = db.attendance
+attendances = db.attendance
+transaction = db.transaction
 
 transactionApi = Blueprint('transaction-api', __name__)
+
 
 @transactionApi.route('/make', methods=['post'])
 def makeTransaction():
 
-    attendances = json.loads(dumps(collection.find({'_id': ObjectId(request.get_json()['id'])})))
+    attendance = json.loads(dumps(attendances.find_one({'_id': ObjectId(request.get_json()['id'])})))
 
-    for attendance in attendances:
-            attendance['_id'] = str(attendance['_id'])
+    attendance['_id'] = str(attendance['_id'])
 
     medical_consultation = {
         'data': {
-            'medical_consultation': attendances
+            'medical_consultation': attendance
         }
     }
 
@@ -52,6 +53,20 @@ def makeTransaction():
         return jsonify({"error": "Error entering data"})
 
     # Pegando identificador da transação
-    id_block = fulfilled_creation_tx['id']
+    block_id = fulfilled_creation_tx['id']
 
-    return jsonify({'id_bloco': id_block, "message": "created"})
+    transaction.insert_one({"id": block_id})
+
+    return jsonify({
+        "block_id": block_id, 
+        "attendance": sent_creation_tx['asset']['data']['medical_consultation'], 
+        "message": "created"
+    })
+
+
+@transactionApi.route('/', methods=['get'])
+def getTransactions():
+    req = request.get_json()['search']
+    finded = json.loads(dumps(bdb.transactions.get(asset_id=req)))
+
+    return jsonify(finded)
