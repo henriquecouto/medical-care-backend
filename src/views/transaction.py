@@ -23,13 +23,15 @@ transactionApi = Blueprint('transaction-api', __name__)
 @transactionApi.route('/make', methods=['post'])
 def makeTransaction():
 
-    attendance = json.loads(dumps(attendances.find_one({'_id': ObjectId(request.get_json()['id'])})))
+    req = request.get_json()
+
+    attendance = json.loads(dumps(attendances.find_one({'_id': ObjectId(req['id'])})))
 
     attendance['_id'] = str(attendance['_id'])
 
     medical_consultation = {
         'data': {
-            'medical_consultation': attendance
+            'medical_consultation': attendance,
         }
     }
 
@@ -55,7 +57,7 @@ def makeTransaction():
     # Pegando identificador da transação
     block_id = fulfilled_creation_tx['id']
 
-    transaction.insert_one({"id": block_id})
+    transaction.insert_one({"transaction_id": block_id, "user_id": req['user']})
 
     return jsonify({
         "block_id": block_id, 

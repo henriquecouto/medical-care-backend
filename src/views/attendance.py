@@ -19,7 +19,7 @@ def register():
 
     data = request.get_json()
 
-    keys = ['anamnesis', 'exams', 'patient', 'symptons']
+    keys = ['anamnesis', 'exams', 'patient', 'symptons', 'doctor']
 
     error = validate_keys(data, keys)
 
@@ -27,6 +27,7 @@ def register():
         return error
 
     patient = db.patient.find_one({'_id': ObjectId(data['patient'])})
+    doctor = db.doctor.find_one({'_id': ObjectId(data['doctor'])})
 
     if not patient:
         return jsonify({'result': 'patient not registered'})
