@@ -1,3 +1,6 @@
+from flask import jsonify
+
+
 def validate_keys(obj, keys):
     for key in keys:
         if not obj[key]:

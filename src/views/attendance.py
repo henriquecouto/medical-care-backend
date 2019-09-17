@@ -19,7 +19,7 @@ def register():
 
     data = request.get_json()
 
-    keys = ['anamnesis', 'exams', 'patient', 'symptons', 'doctor']
+    keys = ['anamnese', 'exams', 'patient', 'symptoms', 'doctor']
 
     error = validate_keys(data, keys)
 
@@ -40,7 +40,8 @@ def register():
         else:
             attendance['data'][key] = data[key]
 
-    attendance['data']['createdAt'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    attendance['data']['createdAt'] = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S.%f")
 
     try:
         collection.insert_one(attendance)
@@ -48,12 +49,12 @@ def register():
     except:
         return jsonify({'result': 'an error ocurred'})
 
+
 @attendanceApi.route('/', methods=['get'])
 def getAttendances():
     try:
         attendances = json.loads(dumps(collection.find()))
-        for attendance in attendances:
-            attendance['_id'] = str(attendance['_id'])
+
         return jsonify({'result': attendances})
     except Exception as e:
         return jsonify({'result': 'an error ocurred'})

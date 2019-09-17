@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import json
 from bson.json_util import dumps
 from datetime import date
+import re
 
 from config.mongo import db
 from utils.validate_keys import validate_keys
@@ -41,8 +42,20 @@ def register():
 def getPatients():
     try:
         patients = json.loads(dumps(collection.find()))
-        for patient in patients:
-            patient['_id'] = str(patient['_id'])
+
         return jsonify({'result': patients})
+    except Exception as e:
+        return jsonify({'result': 'an error ocurred'})
+
+
+@patientApi.route('/search', methods=['post'])
+def searchPatient():
+
+    data = request.get_json()
+
+    try:
+        patient = json.loads(dumps(collection.find_one(
+            {'data.name': re.compile('^' + data['name'] + '$', re.IGNORECASE)})))
+        return jsonify({'result': patient})
     except Exception as e:
         return jsonify({'result': 'an error ocurred'})
