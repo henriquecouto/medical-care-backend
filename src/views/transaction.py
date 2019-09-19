@@ -20,52 +20,6 @@ transaction = db.transaction
 transactionApi = Blueprint('transaction-api', __name__)
 
 
-@transactionApi.route('/make', methods=['post'])
-def makeTransaction():
-
-    req = request.get_json()
-
-    attendance = json.loads(dumps(attendances.find_one({'_id': ObjectId(req['id'])})))
-
-    attendance['_id'] = str(attendance['_id'])
-
-    medical_consultation = {
-        'data': {
-            'medical_consultation': attendance,
-        }
-    }
-
-    # Preparando a transação
-    prepared_creation_tx = bdb.transactions.prepare(
-        operation='CREATE',
-        signers=key_consultation.public_key,
-        asset=medical_consultation,
-    )
-
-    # Assinando transação com a chave privada
-    fulfilled_creation_tx = bdb.transactions.fulfill(
-        prepared_creation_tx, private_keys=key_consultation.private_key
-    )
-
-    # Enviando para o nó do BigChainDB
-    sent_creation_tx = bdb.transactions.send_commit(fulfilled_creation_tx)
-
-    # Verificando se a transação assinada é identica a submetida na rede
-    if not sent_creation_tx == fulfilled_creation_tx:
-        return jsonify({"error": "Error entering data"})
-
-    # Pegando identificador da transação
-    block_id = fulfilled_creation_tx['id']
-
-    transaction.insert_one({"transaction_id": block_id, "user_id": req['user']})
-
-    return jsonify({
-        "block_id": block_id, 
-        "attendance": sent_creation_tx['asset']['data']['medical_consultation'], 
-        "message": "created"
-    })
-
-
 @transactionApi.route('/', methods=['get'])
 def getTransactions():
     req = request.get_json()['search']

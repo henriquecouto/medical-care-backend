@@ -9,6 +9,8 @@ from datetime import datetime
 from config.mongo import db
 from utils.validate_keys import validate_keys
 
+from utils.transaction import scheduleTransaction
+
 collection = db.attendance
 
 attendanceApi = Blueprint('attendance-api', __name__)
@@ -44,10 +46,12 @@ def register():
         "%Y-%m-%d %H:%M:%S.%f")
 
     try:
-        collection.insert_one(attendance)
+        obj = collection.insert_one(attendance)
+        print(obj.inserted_id)
+        scheduleTransaction(obj.inserted_id)
         return jsonify({'result': 'success'})
-    except:
-        return jsonify({'result': 'an error ocurred'})
+    except Exception as e:
+        return jsonify({'result': 'an error ocurred oooo'})
 
 
 @attendanceApi.route('/', methods=['get'])

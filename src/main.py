@@ -8,12 +8,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-
-@app.route("/")
-def helloWorld():
-    return jsonify({'a': "Hello, cross-origin-world!"})
-
-
 app.register_blueprint(patientApi, url_prefix='/patient')
 app.register_blueprint(attendanceApi, url_prefix='/attendance')
 app.register_blueprint(transactionApi, url_prefix='/transaction')
