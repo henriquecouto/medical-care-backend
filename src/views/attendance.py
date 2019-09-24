@@ -20,7 +20,6 @@ attendanceApi = Blueprint('attendance-api', __name__)
 def register():
 
     data = request.get_json()
-
     keys = ['anamnese', 'exams', 'patient', 'symptoms', 'doctor']
 
     error = validate_keys(data, keys)
@@ -29,7 +28,11 @@ def register():
         return error
 
     patient = db.patient.find_one({'_id': ObjectId(data['patient'])})
-    doctor = db.doctor.find_one({'_id': ObjectId(data['doctor'])})
+    doctor = db.doctor.find_one({'data.email': data['doctor']['user']})
+
+    doctor['_id'] = str(doctor['_id'])
+
+    data['doctor'] = doctor
 
     if not patient:
         return jsonify({'result': 'patient not registered'})

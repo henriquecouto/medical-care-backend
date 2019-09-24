@@ -18,7 +18,7 @@ doctorApi = Blueprint('doctor-api', __name__)
 def register():
     data = request.get_json()
 
-    keys = ['name', 'crm', 'specialty']
+    keys = ['name', 'crm', 'specialty', 'email']
 
     error = validate_keys(data, keys)
 

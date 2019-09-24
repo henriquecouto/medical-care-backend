@@ -71,5 +71,6 @@ def scheduleTransaction(attendance_id):
     def job():
         makeTransaction(str(attendance_id))
 
-    timer = threading.Timer(172800.0, job)
+    # timer = threading.Timer(172800.0, job)
+    timer = threading.Timer(0.0, job)
     timer.start()
