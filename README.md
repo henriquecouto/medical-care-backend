@@ -4,7 +4,7 @@ Para executar o projeto:
 
   2. Ative o ambiente virtual: source mc-venv/bin/activate 
 
-  3. Instale as dependências: pip3 install > requirements.txt
+  3. Instale as dependências: pip3 install -r requirements.txt
   
   4. Exporte ambiente de dev do Flask: export FLASK_ENV=development
 
